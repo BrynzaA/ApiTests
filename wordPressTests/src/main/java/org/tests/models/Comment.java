@@ -55,10 +55,10 @@ public class Comment {
     private String link;
 
     @JsonProperty("status")
-    private String status; // "approved", "hold", "spam"
+    private String status;
 
     @JsonProperty("type")
-    private String type; // "comment"
+    private String type;
 
     @JsonProperty("author_avatar_urls")
     private Map<String, String> authorAvatarUrls;
