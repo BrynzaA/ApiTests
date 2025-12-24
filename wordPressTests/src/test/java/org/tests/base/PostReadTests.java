@@ -10,6 +10,10 @@ import java.util.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.*;
+import static org.tests.utils.TestDataHelper.generateUniqueContent;
+import static org.tests.utils.TestDataHelper.generateUniqueTitle;
+import static org.tests.utils.TestResponseHelper.createTestPost;
+import static org.tests.utils.TestResponseHelper.getPostById;
 
 public class PostReadTests extends BaseTest {
 
@@ -21,9 +25,7 @@ public class PostReadTests extends BaseTest {
                 .get()
                 .then()
                 .statusCode(200)
-                .body("$", hasSize(greaterThan(0)))
-                .body("[0].id", notNullValue())
-                .body("[0].title", notNullValue())
+                .body("$", hasSize(greaterThan(0)), "[0].id", notNullValue(), "[0].title", notNullValue())
                 .extract()
                 .response();
 
@@ -50,10 +52,9 @@ public class PostReadTests extends BaseTest {
 
         response.then()
                 .statusCode(200)
-                .body("id", equalTo(postId))
-                .body("title.rendered", equalTo(title))
-                .body("content.rendered", containsString(content.substring(0, Math.min(content.length(), 20))))
-                .body("status", equalTo("publish"));
+                .body("id", equalTo(postId), "title.rendered", equalTo(title),
+                        "content.rendered", containsString(content.substring(0, Math.min(content.length(), 20))),
+                        "status", equalTo("publish"));
 
         String responseTitle = response.jsonPath().getString("title.rendered");
         String responseContent = response.jsonPath().getString("content.rendered");

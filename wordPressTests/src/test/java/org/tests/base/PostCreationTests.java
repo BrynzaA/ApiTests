@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import org.tests.models.Post;
 import org.tests.utils.ConfigReader;
 import org.tests.utils.DatabaseManager;
+import org.tests.utils.TestDataHelper;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -14,10 +15,10 @@ import java.util.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.*;
+import static org.tests.utils.TestDataHelper.*;
 
 public class PostCreationTests extends BaseTest {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test(description = "TC-11: Создание поста с минимальными данными")
     public void testCreatePostWithMinimumData() {
@@ -35,10 +36,8 @@ public class PostCreationTests extends BaseTest {
                 .post()
                 .then()
                 .statusCode(201)
-                .body("title.raw", equalTo(title))
-                .body("content.raw", equalTo(content))
-                .body("status", equalTo("draft"))
-                .body("id", notNullValue())
+                .body("title.raw", equalTo(title), "content.raw", equalTo(content),
+                        "status", equalTo("draft"), "id", notNullValue())
                 .extract()
                 .response();
     }
@@ -70,14 +69,10 @@ public class PostCreationTests extends BaseTest {
                 .post()
                 .then()
                 .statusCode(201)
-                .body("title.raw", equalTo(title))
-                .body("content.raw", equalTo(content))
-                .body("slug", equalTo(slug))
-                .body("status", equalTo("future"))
-                .body("comment_status", equalTo("open"))
-                .body("ping_status", equalTo("open"))
-                .body("format", equalTo("standard"))
-                .body("sticky", equalTo(false))
+                .body("title.raw", equalTo(title), "content.raw", equalTo(content),
+                        "slug", equalTo(slug), "status", equalTo("future"), "comment_status", equalTo("open"),
+                        "ping_status", equalTo("open"), "format", equalTo("standard"),
+                        "sticky", equalTo(false))
                 .extract()
                 .response();
     }

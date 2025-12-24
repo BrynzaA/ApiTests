@@ -18,6 +18,9 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.*;
+import static org.tests.utils.TestDataHelper.generateUniqueContent;
+import static org.tests.utils.TestDataHelper.generateUniqueTitle;
+import static org.tests.utils.TestResponseHelper.*;
 
 public class CommentTests extends BaseTest {
 
@@ -130,11 +133,9 @@ public class CommentTests extends BaseTest {
         Response commentResponse = getCommentById(commentId);
         commentResponse.then()
                 .statusCode(200)
-                .body("id", equalTo(commentId))
-                .body("post", equalTo(postId))
-                .body("content.rendered", equalTo(expectedRenderedContent))
-                .body("author_name", equalTo(authorName))
-                .body("status", equalTo("approved"));
+                .body("id", equalTo(commentId),"post", equalTo(postId),
+                        "content.rendered", equalTo(expectedRenderedContent), "author_name", equalTo(authorName),
+                        "status", equalTo("approved"));
     }
 
     @Test(description = "TC-62: Получение списка комментариев для поста")
@@ -191,10 +192,8 @@ public class CommentTests extends BaseTest {
         createdCommentIds.add(replyId);
 
         replyResponse.then()
-                .body("id", equalTo(replyId))
-                .body("post", equalTo(postId))
-                .body("parent", equalTo(parentCommentId))
-                .body("content.raw", equalTo("Reply to parent"));
+                .body("id", equalTo(replyId), "post", equalTo(postId), "parent", equalTo(parentCommentId),
+                "content.raw", equalTo("Reply to parent"));
 
         Response parentResponse = getCommentById(parentCommentId);
         parentResponse.then()
@@ -246,9 +245,8 @@ public class CommentTests extends BaseTest {
         Response updateResponse = updateComment(commentId, updateComment);
         updateResponse.then()
                 .statusCode(200)
-                .body("content.raw", equalTo(updatedContent))
-                .body("author_name", equalTo("User"))
-                .body("post", equalTo(postId));
+                .body("content.raw", equalTo(updatedContent), "author_name", equalTo("User"),
+                        "post", equalTo(postId));
     }
 
     @Test(description = "TC-66: Удаление комментария через API")

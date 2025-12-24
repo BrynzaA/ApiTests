@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.*;
+import static org.tests.utils.TestDataHelper.generateUniqueContent;
+import static org.tests.utils.TestDataHelper.generateUniqueTitle;
+import static org.tests.utils.TestResponseHelper.*;
 
 public class PostDeleteTests extends BaseTest {
 
@@ -30,8 +33,7 @@ public class PostDeleteTests extends BaseTest {
 
         response.then()
                 .statusCode(200)
-                .body("deleted", equalTo(true))
-                .body("previous.id", equalTo(postId));
+                .body("deleted", equalTo(true), "previous.id", equalTo(postId));
 
         assertFalse(DatabaseManager.isPostExists(postId), "Post should not exist in database after deletion");
 

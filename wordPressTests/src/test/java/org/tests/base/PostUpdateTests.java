@@ -11,6 +11,10 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.tests.utils.TestDataHelper.generateUniqueContent;
+import static org.tests.utils.TestDataHelper.generateUniqueTitle;
+import static org.tests.utils.TestResponseHelper.createTestPost;
+import static org.tests.utils.TestResponseHelper.updatePost;
 
 public class PostUpdateTests extends BaseTest {
 
@@ -28,9 +32,7 @@ public class PostUpdateTests extends BaseTest {
 
         response.then()
                 .statusCode(200)
-                .body("id", equalTo(postId))
-                .body("title.raw", equalTo(newTitle))
-                .body("content.raw", equalTo(content));
+                .body("id", equalTo(postId), "title.raw", equalTo(newTitle), "content.raw", equalTo(content));
 
         Map<String, Object> dbPost = DatabaseManager.getPostById(postId);
         assertEquals(dbPost.get("post_title"), newTitle, "Title should be updated in database");
@@ -52,9 +54,7 @@ public class PostUpdateTests extends BaseTest {
          response
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(postId))
-                .body("title.raw", equalTo(title))
-                .body("content.raw", equalTo(newContent))
+                .body("id", equalTo(postId), "title.raw", equalTo(title), "content.raw", equalTo(newContent))
                 .extract()
                 .response();
 
@@ -79,8 +79,7 @@ public class PostUpdateTests extends BaseTest {
         response
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(postId))
-                .body("status", equalTo("publish"))
+                .body("id", equalTo(postId), "status", equalTo("publish"))
                 .extract()
                 .response();
 
@@ -116,11 +115,9 @@ public class PostUpdateTests extends BaseTest {
         Response response = updatePost(postId, updatePost)
                 .then()
                 .statusCode(200)
-                .body("title.raw", equalTo(updatedTitle))
-                .body("content.raw", equalTo(updatedContent))
-                .body("status", equalTo("publish"))
-                .body("comment_status", equalTo("closed"))
-                .body("ping_status", equalTo("closed"))
+                .body("title.raw", equalTo(updatedTitle), "content.raw", equalTo(updatedContent),
+                        "status", equalTo("publish"), "comment_status", equalTo("closed"),
+                        "ping_status", equalTo("closed"))
                 .extract()
                 .response();
 
