@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class ResourceDeletionTest extends BaseTest {
@@ -17,50 +18,39 @@ public class ResourceDeletionTest extends BaseTest {
         String folderName = "test_folder_to_delete_" + uuid;
         String path = "/" + folderName;
 
-        RestAssured.given()
+        createdResources.add(path);
+
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", path)
                 .when()
-                .put(resourceUrl)
+                .get(resourceUrl)
                 .then()
-                .statusCode(201);
-
-
-        Response getResponseBefore = RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", path)
-                .when()
-                .get(resourceUrl);
-
-        getResponseBefore.then()
                 .statusCode(200);
 
-        Response deleteResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", path)
                 .when()
-                .delete(resourceUrl);
-
-        deleteResponse.then()
+                .delete(resourceUrl)
+                .then()
                 .statusCode(204)
                 .body(emptyString());
 
-        Response getResponseAfter = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", path)
                 .when()
-                .get(resourceUrl);
-
-        getResponseAfter.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(404);
 
 
-        Response trashResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .when()
-                .get(trashUrl);
-
-        trashResponse.then()
+                .get(trashUrl)
+                .then()
                 .statusCode(200);
     }
 
@@ -71,42 +61,32 @@ public class ResourceDeletionTest extends BaseTest {
         String path = "/" + folderName;
 
 
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", path)
-                .when()
-                .put(resourceUrl)
-                .then()
-                .statusCode(201);
+        createdResources.add(path);
 
 
-        Response deleteResponse = RestAssured.given()
+       given()
                 .spec(requestBaseSpec)
                 .queryParam("path", path)
                 .queryParam("permanently", "true")
                 .when()
-                .delete(resourceUrl);
-
-
-        deleteResponse.then()
+                .delete(resourceUrl)
+                .then()
                 .statusCode(204)
                 .body(emptyOrNullString());
 
-        Response getResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", path)
                 .when()
-                .get(resourceUrl);
-
-        getResponse.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(404);
 
-        Response trashResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .when()
-                .get(trashUrl);
-
-        trashResponse.then()
+                .get(trashUrl)
+                .then()
                 .statusCode(200);
     }
 }

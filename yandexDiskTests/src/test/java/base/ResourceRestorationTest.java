@@ -8,8 +8,12 @@ import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.Test;
 
+import utils.ResourceHelper;
+
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static utils.ResourceHelper.getTrashPathForResource;
 import static utils.TestDataHelper.addCreatedFolder;
 
 public class ResourceRestorationTest extends BaseTest {
@@ -20,22 +24,9 @@ public class ResourceRestorationTest extends BaseTest {
         String folderName = "test_folder_restore_" + uuid;
         String originalPath = "/" + folderName;
 
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .put(resourceUrl)
-                .then()
-                .statusCode(201);
+        ResourceHelper.createFile(originalPath);
 
-
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .delete(resourceUrl)
-                .then()
-                .statusCode(204);
+        ResourceHelper.createFileSecondTime(originalPath);
 
 
         String trashPath = getTrashPathForResource(folderName);
@@ -43,24 +34,22 @@ public class ResourceRestorationTest extends BaseTest {
             throw new RuntimeException("Не удалось найти папку в корзине: " + folderName);
         }
 
-        Response restoreResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", trashPath)
                 .when()
-                .put(trashUrl + "/restore");
-
-        restoreResponse.then()
+                .put(trashUrl + "/restore")
+                .then()
                 .statusCode(201)
                 .body("href", notNullValue());
 
 
-        Response checkResponse = RestAssured.given()
+       given()
                 .spec(requestBaseSpec)
                 .queryParam("path", originalPath)
                 .when()
-                .get(resourceUrl);
-
-        checkResponse.then()
+                .get(resourceUrl)
+               .then()
                 .statusCode(200)
                 .body("name", equalTo(folderName), "type", equalTo("dir"));
 
@@ -78,21 +67,9 @@ public class ResourceRestorationTest extends BaseTest {
         String originalPath = "/" + originalFolderName;
 
 
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .put(resourceUrl)
-                .then()
-                .statusCode(201);
+        ResourceHelper.createFile(originalPath);
 
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .delete(resourceUrl)
-                .then()
-                .statusCode(204);
+        ResourceHelper.createFileSecondTime(originalPath);
 
 
         String trashPath = getTrashPathForResource(originalFolderName);
@@ -101,38 +78,35 @@ public class ResourceRestorationTest extends BaseTest {
         }
 
 
-        Response restoreResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", trashPath)
                 .queryParam("name", newFolderName)
                 .when()
-                .put(trashUrl + "/restore");
-
-        restoreResponse.then()
+                .put(trashUrl + "/restore")
+                .then()
                 .statusCode(201)
                 .body("href", notNullValue());
 
 
         String newPath = "/" + newFolderName;
 
-        Response checkNewResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", newPath)
                 .when()
-                .get(resourceUrl);
-
-        checkNewResponse.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(200)
                 .body("name", equalTo(newFolderName));
 
 
-        Response checkOldResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", originalPath)
                 .when()
-                .get(resourceUrl);
-
-        checkOldResponse.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(404);
 
 
@@ -145,22 +119,9 @@ public class ResourceRestorationTest extends BaseTest {
         String folderName = "test_folder_fields_" + uuid;
         String originalPath = "/" + folderName;
 
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .put(resourceUrl)
-                .then()
-                .statusCode(201);
+        ResourceHelper.createFile(originalPath);
 
-
-        RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", originalPath)
-                .when()
-                .delete(resourceUrl)
-                .then()
-                .statusCode(204);
+        ResourceHelper.createFileSecondTime(originalPath);
 
 
         String trashPath = getTrashPathForResource(folderName);
@@ -169,55 +130,25 @@ public class ResourceRestorationTest extends BaseTest {
         }
 
 
-        Response restoreResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", trashPath)
                 .queryParam("fields", "path,name,type")
                 .when()
-                .put(trashUrl + "/restore");
-
-        restoreResponse.then()
+                .put(trashUrl + "/restore")
+                .then()
                 .statusCode(201);
 
 
-        Response checkResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", originalPath)
                 .when()
-                .get(resourceUrl);
-
-        checkResponse.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(200)
                 .body("name", equalTo(folderName));
 
         addCreatedFolder(originalPath);
-    }
-
-    private String getTrashPathForResource(String resourceName) {
-        try {
-            Response response = RestAssured.given()
-                    .spec(requestBaseSpec)
-                    .when()
-                    .get(trashUrl);
-
-            JsonPath jsonPath = response.jsonPath();
-            List<Map<String, Object>> items = jsonPath.getList("_embedded.items");
-
-            if (items == null || items.isEmpty()) {
-                return null;
-            }
-
-            for (Map<String, Object> item : items) {
-                String name = (String) item.get("name");
-                if (resourceName.equals(name)) {
-                    return (String) item.get("path");
-                }
-            }
-
-            return null;
-
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

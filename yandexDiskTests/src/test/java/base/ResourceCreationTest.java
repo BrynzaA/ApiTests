@@ -1,11 +1,14 @@
 package base;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.util.UUID;
 import org.testng.annotations.Test;
 
+import utils.ResourceHelper;
+
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static utils.ResourceHelper.createFile;
 import static utils.TestDataHelper.addCreatedFolder;
 
 public class ResourceCreationTest extends BaseTest {
@@ -16,19 +19,12 @@ public class ResourceCreationTest extends BaseTest {
         String folderName = "test_folder_" + timestamp;
         String path = "/" + folderName;
 
-        Response response = RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", path)
-                .when()
-                .put(resourceUrl);
-
-        addCreatedFolder(path);
-
-        response.then()
-                .statusCode(201)
+        createFile(path)
                 .body("method", notNullValue())
                 .body("href", notNullValue())
                 .body("templated", notNullValue());
+
+        addCreatedFolder(path);
     }
 
     @Test(description = "TC-12 Создание вложенной папки через REST API")
@@ -38,34 +34,25 @@ public class ResourceCreationTest extends BaseTest {
         String childFolderName = "child_folder_" + uuid;
         String nestedPath = parentFolder + "/" + childFolderName;
 
-        Response parentResponse = RestAssured.given()
-                .spec(requestBaseSpec)
-                .queryParam("path", parentFolder)
-                .when()
-                .put(resourceUrl);
-
-        parentResponse.then()
-                .statusCode(201)
+        createFile(parentFolder)
                 .body("method", notNullValue());
 
-        Response nestedResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", nestedPath)
                 .when()
-                .put(resourceUrl);
-
-        nestedResponse.then()
+                .put(resourceUrl)
+                .then()
                 .statusCode(201)
                 .body("href", containsString(parentFolder.substring(1)))
                 .body("href", containsString(childFolderName));
 
-        Response checkResponse = RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .queryParam("path", parentFolder)
                 .when()
-                .get(resourceUrl);
-
-        checkResponse.then()
+                .get(resourceUrl)
+                .then()
                 .statusCode(200)
                 .body("type", equalTo("dir"));
 

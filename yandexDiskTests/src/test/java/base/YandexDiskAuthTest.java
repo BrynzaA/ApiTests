@@ -3,6 +3,7 @@ package base;
 import io.restassured.RestAssured;
 import org.testng.annotations.Test;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 
 //Задача D3.  Автотесты REST
@@ -10,7 +11,7 @@ public class YandexDiskAuthTest extends BaseTest {
 
     @Test(description = "TC-01 Успешная авторизация по токену")
     public void yandexDiskAuthSuccessTest() {
-        RestAssured.given()
+        given()
                 .spec(requestBaseSpec)
                 .when()
                 .get()
@@ -21,7 +22,7 @@ public class YandexDiskAuthTest extends BaseTest {
 
     @Test(description = "TC-02 Не успешная авторизация без токена")
     public void yandexDiskAuthFailTest() {
-        RestAssured.given()
+        given()
                 .spec(requestBaseNoAuthSpec)
                 .when()
                 .get()
