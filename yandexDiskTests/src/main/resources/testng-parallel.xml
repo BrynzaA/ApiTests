@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Yandex Disk API Parallel Tests" parallel="classes" thread-count="3">
+<!--Задача D5.  Параллельный запуск тестов-->
+    <test name="All API Tests" parallel="classes" thread-count="3">
+        <classes>
+            <class name="base.YandexDiskAuthTest"/>
+            <class name="base.ResourceCreationTest"/>
+            <class name="base.ResourceDeletionTest"/>
+            <class name="base.ResourceRestorationTest"/>
+        </classes>
+    </test>
+
+</suite>

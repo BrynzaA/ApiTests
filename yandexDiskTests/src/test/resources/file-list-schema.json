@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "path": {"type": "string"},
+    "type": {"type": "string", "enum": ["file", "dir"]},
+    "name": {"type": "string"},
+    "created": {"type": "string"},
+    "modified": {"type": "string"},
+    "size": {"type": "integer"},
+    "mime_type": {"type": "string"},
+    "md5": {"type": "string"},
+    "sha256": {"type": "string"},
+    "preview": {"type": "string"},
+    "public_key": {"type": "string"},
+    "public_url": {"type": "string"},
+    "_embedded": {
+      "type": "object",
+      "properties": {
+        "total": {"type": "integer"},
+        "limit": {"type": "integer"},
+        "offset": {"type": "integer"},
+        "path": {"type": "string"},
+        "sort": {"type": "string"},
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "media_type": {"type": "string"},
+    "file": {"type": "string"},
+    "resource_id": {"type": "string"},
+    "share": {
+      "type": "object",
+      "properties": {
+        "is_owned": {"type": "boolean"},
+        "is_root": {"type": "boolean"},
+        "rights": {"type": "string"}
+      }
+    },
+    "revision": {"type": "integer"},
+    "comment_ids": {
+      "type": "object",
+      "properties": {
+        "public_resource": {"type": "string"},
+        "private_resource": {"type": "string"}
+      }
+    },
+    "custom_properties": {"type": "object"},
+    "exif": {"type": "object"},
+    "antivirus_status": {"type": "object"},
+    "photoslice_time": {"type": "string"},
+    "sizes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {"type": "string"},
+          "name": {"type": "string"}
+        }
+      }
+    }
+  },
+  "required": ["path", "type", "name"]
+}

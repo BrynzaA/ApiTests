@@ -91,10 +91,8 @@ public class CommentTests extends BaseTest {
                     stmt.setInt(index++, postId);
                 }
                 int deleted = stmt.executeUpdate();
-                System.out.println("Deleted " + deleted + " posts from database");
             }
-        } catch (SQLException e) {
-            System.out.println("Warning: Failed to delete posts from database: " + e.getMessage());
+        } catch (SQLException ignored) {
         }
     }
 
